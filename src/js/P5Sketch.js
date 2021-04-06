@@ -12,55 +12,83 @@ const P5Sketch = () => {
 
         p.canvasHeight = window.innerHeight;
 
-        p.setup = () => {
-            p.canvas = p.createCanvas(p.canvasWidth, p.canvasHeight);
-            //p.noLoop();
-            //p.noLoop();
-        };
-
         p.shapeSize = 0;
 
-        p.draw = () => {
-            const sizeLimit = p.width / 16;
+        p.colours = [
+          "#52b947",
+          "#f3ec19",
+          "#f57e20",
+          "#ed1f24",
+          "#991b4f",
+          "#f57e20",
+        ];
+
+        p.triangles = [];
+
+        p.setup = () => {
+            p.canvas = p.createCanvas(p.canvasWidth, p.canvasHeight);
+            p.noFill();
+            p.noFill();
+            p.strokeJoin(p.ROUND);
+            p.strokeCap(p.ROUND);
+            const sizeLimit = p.height / 8;
             const limitX = p.width + sizeLimit;
             const limitY = p.height + sizeLimit;
             let x = 0 - sizeLimit;
+            let coloursIndex = 0;
             while(x < limitX){
                 let y = 0 - sizeLimit;
                 x = x + sizeLimit;
                 while(y < limitY){
-                    p.fill(0, 255, 0);
-                    p.equilateral(x, y, p.shapeSize);
-                    p.fill(0, 0, 255);
-                    p.equilateral(x + sizeLimit / 2, y, p.shapeSize, true);
+                    p.triangles.push({
+                      x: x,
+                      y: y,
+                      colour: p.color(p.colours[coloursIndex]),
+                      colour2: p.color(p.colours[coloursIndex+1]),
+                    });
+                    coloursIndex = coloursIndex >= 4 ? 0 : coloursIndex + 2;
                     y = y + sizeLimit;
                 }
             }
-            p.shapeSize++
-            p.shapeSize = p.shapeSize <= sizeLimit ? p.shapeSize : 0;
         };
 
+        p.draw = () => {
+            const sizeLimit = p.height / 8;
+            p.strokeWeight(sizeLimit/16);
+            p.background(255);
+            p.drawTriangleGrid(p.triangles, sizeLimit, p.shapeSize);
+            p.shapeSize++
+            p.shapeSize =
+              p.shapeSize < sizeLimit - sizeLimit / 8 ? p.shapeSize : 0;
+        };
 
-        /*
-        * function to draw an equilateral triangle with a set width
-        * based on x, y co-oridinates that are the center of the triangle
-        * @param {Number} x        - x-coordinate that is at the center of triangle
-        * @param {Number} y      	- y-coordinate that is at the center of triangle
-        * @param {Number} width    - radius of the hexagon
-        */
+        p.drawTriangleGrid = (triangles, sizeLimit, size) => {
+            let triangle = {}
+            for(let i = 0; i < triangles.length; i++){
+                triangle = triangles[i];
+                p.fill(triangle.colour, 127);
+                p.equilateral(triangle.x, triangle.y, size);
+                p.fill(triangle.colour2, 127);
+                p.equilateral(
+                  triangle.x + sizeLimit / 2,
+                  triangle.y,
+                  size,
+                  true
+                );
+            }
+        };
+
         p.equilateral = (x, y, width, inverted = false) => {
-            const x1 = x - width / 2;
-            const y1 = y + width / 2;
-            const x2 = x;
-            const y2 = y - width / 2;
-            const x3 = x + width / 2;
-            const y3 = y + width / 2;
-            if(inverted){
-                p.triangle(x1, y1 - width, x2, y2 + width, x3, y3 - width);
-            }
-            else {
-                p.triangle(x1, y1, x2, y2, x3, y3);
-            }
+            x = x - width / 2;
+            y = inverted ? y - width / 2 : y + width / 2;
+            const centerYHelper = inverted ? width / 2 : -width / 2;
+            const x1 = x;
+            const y1 = y;
+            const x2 = x + width / 2;
+            const y2 = y + centerYHelper * p.sqrt(3);
+            const x3 = x + width;
+            const y3 = y;
+            p.triangle(x1, y1, x2, y2, x3, y3);
         };
 
         p.updateCanvasDimensions = () => {
