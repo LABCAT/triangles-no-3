@@ -5,6 +5,7 @@ import * as p5 from "p5";
 import ShuffleArray from "./ShuffleArray.js";
 import audio from "../audio/triangles-no-3.ogg";
 import cueSet1 from "./cueSet1.js";
+import cueSet2 from "./cueSet2.js";
 
 const P5Sketch = () => {
     const sketchRef = useRef();
@@ -32,9 +33,13 @@ const P5Sketch = () => {
 
         p.triangles = [];
 
+        p.triangles2 = [];
+
         p.colours = [];
 
         p.cueSet1Completed = [];
+
+        p.cueSet2Completed = [];
 
         p.setup = () => {
             p.song = p.loadSound(audio);
@@ -44,6 +49,7 @@ const P5Sketch = () => {
             p.strokeJoin(p.ROUND);
             p.strokeCap(p.ROUND);
             p.populateTrianglesArray();    
+            p.populateTriangles2Array();    
             p.populateColoursArray();  
              
             p.song.onended(p.logCredits);
@@ -55,6 +61,15 @@ const P5Sketch = () => {
                 durationTicks: cueSet1[i].durationTicks,
               };
               p.song.addCue(cueSet1[i].time, p.executeCueSet1, vars);
+            }
+
+            for (let i = 0; i < cueSet2.length; i++) {
+              let vars = {
+                currentCue: i + 1,
+                duration: cueSet2[i].duration,
+                durationTicks: cueSet2[i].durationTicks,
+              };
+              p.song.addCue(cueSet2[i].time, p.executeCueSet2, vars);
             }
         };
 
@@ -72,6 +87,128 @@ const P5Sketch = () => {
                       y: y,
                     });
                     y = y + sizeLimit;
+                }
+            }
+        };
+
+        p.populateTriangles2Array = () => {
+            const sizeLimit = p.height / 8;
+            //center
+            let startX = p.width / 2;
+            let startY = p.height / 2;
+            p.triangles2[0] = [];
+            p.triangles2[0].push({
+                x: startX,
+                y: startY,
+                fill: p.color(255,0,0),
+                inverse: false
+            });
+            p.triangles2[0].push({
+                x: startX - sizeLimit / 2,
+                y: startY,
+                fill: p.color(0,255,0),
+                inverse: true
+            });
+            p.triangles2[0].push({
+                x: startX + sizeLimit / 2,
+                y: startY,
+                fill: p.color(0,255,0),
+                inverse: true
+            });
+
+            for (let i = 1; i <= 12; i++) {
+                p.triangles2[i] = [];
+                for (let sides = 1; sides <= 4; sides++) {
+                    let topRightX = startX;
+                    let topRightY = startY  - (sizeLimit * i);
+                    let bottomRightX = startX + (sizeLimit * i);
+                    let bottomRightY = startY;
+                    let bottomLeftX = startX;
+                    let bottomLeftY = startY  + (sizeLimit * i);
+                    let topLeftX = startX  - (sizeLimit * i);
+                    let topLeftY = startY;
+                    for (let step = 0; step < i; step++) {
+                        //regular
+                        p.triangles2[i].push({
+                            x: topRightX + (sizeLimit * step),
+                            y: topRightY + (sizeLimit * step),
+                            fill: p.color(255,0,0),
+                            inverse: false
+                        });
+                        //inverse
+                        p.triangles2[i].push({
+                            x: topRightX + (sizeLimit * step) - sizeLimit / 2,
+                            y: topRightY + (sizeLimit * step),
+                            fill: p.color(0,255,0),
+                            inverse: true
+                        });
+                        p.triangles2[i].push({
+                            x: topRightX + (sizeLimit * step) + sizeLimit / 2,
+                            y: topRightY + (sizeLimit * step),
+                            fill: p.color(0,255,0),
+                            inverse: true
+                        });
+                        //regular
+                        p.triangles2[i].push({
+                            x: bottomRightX - (sizeLimit * step),
+                            y: bottomRightY + (sizeLimit * step),
+                            fill: p.color(255,0,0),
+                            inverse: false
+                        });
+                        //inverse
+                        p.triangles2[i].push({
+                            x: bottomRightX - (sizeLimit * step) - sizeLimit / 2,
+                            y: bottomRightY + (sizeLimit * step),
+                            fill: p.color(0,255,0),
+                            inverse: true
+                        });
+                        p.triangles2[i].push({
+                            x: bottomRightX - (sizeLimit * step) + sizeLimit / 2,
+                            y: bottomRightY + (sizeLimit * step),
+                            fill: p.color(0,255,0),
+                            inverse: true
+                        });
+                        //regular
+                        p.triangles2[i].push({
+                            x: bottomLeftX - (sizeLimit * step),
+                            y: bottomLeftY - (sizeLimit * step),
+                            fill: p.color(255,0,0),
+                            inverse: false
+                        });
+                        //inverse
+                        p.triangles2[i].push({
+                            x: bottomLeftX - (sizeLimit * step) - sizeLimit / 2,
+                            y: bottomLeftY - (sizeLimit * step),
+                            fill: p.color(0,255,0),
+                            inverse: true
+                        });
+                        p.triangles2[i].push({
+                            x: bottomLeftX - (sizeLimit * step) + sizeLimit / 2,
+                            y: bottomLeftY - (sizeLimit * step),
+                            fill: p.color(0,255,0),
+                            inverse: true
+                        });
+                        //regular
+                        p.triangles2[i].push({
+                            x: topLeftX + (sizeLimit * step),
+                            y: topLeftY - (sizeLimit * step),
+                            fill: p.color(255,0,0),
+                            inverse: false
+                        });
+                        //inverse
+                        p.triangles2[i].push({
+                            x: topLeftX + (sizeLimit * step) - sizeLimit / 2,
+                            y: topLeftY - (sizeLimit * step),
+                            fill: p.color(0,255,0),
+                            inverse: true
+                        });
+                        p.triangles2[i].push({
+                            x: topLeftX + (sizeLimit * step) + sizeLimit / 2,
+                            y: topLeftY - (sizeLimit * step),
+                            fill: p.color(0,255,0),
+                            inverse: true
+                        });
+                    }
                 }
             }
         };
@@ -109,7 +246,6 @@ const P5Sketch = () => {
             p.cueSet1Completed.push(vars.currentCue);
             let sizeLimit = p.height / 8;
             p.strokeWeight(sizeLimit / 16);
-            //sizeLimit = p.colourSwitch ? sizeLimit - sizeLimit / 16 : sizeLimit;
             p.clear();
             p.background(255);
             let shapeSize = 0;
@@ -124,6 +260,53 @@ const P5Sketch = () => {
             }
             p.populateColoursArray(p.colourSwitch);
             p.colourSwitch = !p.colourSwitch;
+          }
+        };
+
+        p.executeCueSet2 = (vars) => {
+          if (!p.cueSet2Completed.includes(vars.currentCue)) {
+            p.cueSet2Completed.push(vars.currentCue);
+            p.clear();
+            p.background(255);
+            p.strokeWeight(p.height / 8 / 32);
+            let triangles = {}
+            let triangle = {}
+            let colourPallete = ShuffleArray(p.colourPallete);
+            
+            let pointer = vars.currentCue;
+            let modulo = 8;
+            if(pointer >= 88){
+              pointer = pointer - 87;
+            }
+            else if(pointer >= 75){
+              pointer = pointer - 74;
+              modulo = 13;
+            }
+            else if(pointer >= 59){
+              pointer = pointer - 58;
+            }
+            else if(pointer >= 46){
+              pointer = pointer - 45;
+              modulo = 13;
+            }
+            else if(pointer >= 30){
+              pointer = pointer - 29;
+            }
+            else if(pointer >= 17){
+              pointer = pointer - 16;
+              modulo = 13;
+            }
+            let numOfLoops = pointer % modulo ? pointer % modulo : modulo;
+            for(let i = 0; i < numOfLoops; i++){
+                triangles = p.triangles2[i];
+                for(let i = 0; i < triangles.length; i++){
+                    triangle = triangles[i];
+                    p.fill(colourPallete[i % 6]);
+                    p.stroke(0);
+                    p.equilateral(triangle.x, triangle.y, p.height/8, triangle.inverse);
+                }
+            }
+            
           }
         };
 
